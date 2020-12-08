@@ -68,7 +68,7 @@ class Kokkos(CMakePackage, CudaPackage):
                       'Create bindings for profiling tools'],
         'profiling_load_print': [False,
                                  'Print which profiling tools got loaded'],
-        'qthread': [False, 'Eenable the QTHREAD library'],
+        'qthread': [False, 'Enable the QTHREAD library'],
         'tests': [False, 'Build for tests'],
     }
 
