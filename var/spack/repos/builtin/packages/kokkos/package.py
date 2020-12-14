@@ -59,7 +59,7 @@ class Kokkos(CMakePackage, CudaPackage):
                                'Use bounds checking - will increase runtime'],
         'debug_dualview_modify_check': [False, 'Debug check on dual views'],
         'deprecated_code': [False, 'Whether to enable deprecated code'],
-        'examples': [False, 'Whether to build OpenMP  backend'],
+        'examples': [False, 'Whether to build examples.'],
         'explicit_instantiation': [False,
                                    'Explicitly instantiate template types'],
         'hpx_async_dispatch': [False,
@@ -263,3 +263,21 @@ class Kokkos(CMakePackage, CudaPackage):
         options.append('-DBUILD_SHARED_LIBS=%s' % ('+shared' in self.spec))
 
         return options
+
+
+
+    extra_install_tests = ['./example/tutorial/01_hello_world/hello_world.cpp']
+
+    @run_after('install')
+    def setup_build_tests(self):
+        """Copy the build test files after the package is installed to an
+        install test subdirectory for use during `spack test run`."""
+        self.cache_extra_test_sources(self.extra_install_tests)
+
+    def _run_smoke_tests(self):
+	return
+
+def test(self):
+        # Run the simple built-in smoke test
+        self._run_smoke_tests()
+	return 
