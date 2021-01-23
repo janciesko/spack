@@ -8,15 +8,17 @@ from spack import *
 class Kokkos(CMakePackage, CudaPackage):
     """Kokkos implements a programming model in C++ for writing performance
     portable applications targeting all major HPC platforms."""
-
+   
     homepage = "https://github.com/kokkos/kokkos"
-    git = "https://github.com/kokkos/kokkos.git"
-    url = "https://github.com/kokkos/kokkos/archive/3.1.01.tar.gz"
+    git = "https://github.com/janciesko/kokkos.git"
+    #url = "https://github.com/kokkos/kokkos/archive/3.1.01.tar.gz"
+    Test_requires_compiler = True
 
     maintainers = ['jjwilke']
 
     version('develop', branch='develop')
     version('master',  branch='master')
+    version('spack_test_2', branch='spack_test_2')
     version('3.2.00', sha256='05e1b4dd1ef383ca56fe577913e1ff31614764e65de6d6f2a163b2bddb60b3e9')
     version('3.1.01', sha256='ff5024ebe8570887d00246e2793667e0d796b08c77a8227fe271127d36eec9dd')
     version('3.1.00', sha256="b935c9b780e7330bcb80809992caa2b66fd387e3a1c261c955d622dae857d878")
@@ -264,20 +266,36 @@ class Kokkos(CMakePackage, CudaPackage):
 
         return options
 
-
-
-    extra_install_tests = ['./example/tutorial/01_hello_world/hello_world.cpp']
+    test_script_relative_path = "scripts/spack_test"
 
     @run_after('install')
     def setup_build_tests(self):
-        """Copy the build test files after the package is installed to an
-        install test subdirectory for use during `spack test run`."""
-        self.cache_extra_test_sources(self.extra_install_tests)
+        """Copy test."""
+        cmake_out_path = self.test_script_relative_path + "/out"
+        cmake_args = [self.stage.source_path + "/" + self.test_script_relative_path,
+        "-DSPACK_PACKAGE_SOURCE_DIR:PATH={0}".format(self.stage.source_path),
+        "-DSPACK_PACKAGE_TEST_ROOT_DIR:PATH={0}".format(self.install_test_root + "/" +cmake_out_path),
+        "-DSPACK_PACKAGE_INSTALL_DIR:PATH={0}".format(self.prefix)
+        ]
+        cmake(*cmake_args)
+        self.cache_extra_test_sources(cmake_out_path)
 
-    def _run_smoke_tests(self):
-	return
+    def build_tests(self):
+        """Build test."""
+        cmake_path = self.install_test_root + "/" + self.test_script_relative_path + "/out"
+        cmake_args = [cmake_path]
+        reason = 'Checking ability to compile.'
+        cmake(*cmake_args)
+        make()
 
-def test(self):
-        # Run the simple built-in smoke test
-        self._run_smoke_tests()
-	return 
+    def run_tests(self):
+        """Run test."""
+        reason = 'Checking ability to execute.'
+        bash = which("bash")
+        bash(self.install_test_root + "/" + self.test_script_relative_path + "/out" + "/run.sh")
+    
+    def test(self):
+        self.build_tests()
+        self.run_tests()
+
+
