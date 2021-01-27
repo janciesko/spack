@@ -12,7 +12,7 @@ class Kokkos(CMakePackage, CudaPackage):
     homepage = "https://github.com/kokkos/kokkos"
     git = "https://github.com/janciesko/kokkos.git"
     #url = "https://github.com/kokkos/kokkos/archive/3.1.01.tar.gz"
-    Test_requires_compiler = True
+    test_requires_compiler = True
 
     maintainers = ['jjwilke']
 
@@ -271,10 +271,10 @@ class Kokkos(CMakePackage, CudaPackage):
     @run_after('install')
     def setup_build_tests(self):
         """Copy test."""
-        cmake_out_path = self.test_script_relative_path + "/out"
-        cmake_args = [self.stage.source_path + "/" + self.test_script_relative_path,
+        cmake_out_path = join_path(self.test_script_relative_path, 'out')
+        cmake_args = [join_path(self.stage.source_path, self.test_script_relative_path),
         "-DSPACK_PACKAGE_SOURCE_DIR:PATH={0}".format(self.stage.source_path),
-        "-DSPACK_PACKAGE_TEST_ROOT_DIR:PATH={0}".format(self.install_test_root + "/" +cmake_out_path),
+        "-DSPACK_PACKAGE_TEST_ROOT_DIR:PATH={0}".format(join_path(self.install_test_root, cmake_out_path)),
         "-DSPACK_PACKAGE_INSTALL_DIR:PATH={0}".format(self.prefix)
         ]
         cmake(*cmake_args)
@@ -282,17 +282,17 @@ class Kokkos(CMakePackage, CudaPackage):
 
     def build_tests(self):
         """Build test."""
-        cmake_path = self.install_test_root + "/" + self.test_script_relative_path + "/out"
+        cmake_path = join_path(self.install_test_root, self.test_script_relative_path, 'out')
         cmake_args = [cmake_path]
         reason = 'Checking ability to compile.'
-        cmake(*cmake_args)
-        make()
+	self.run_test('cmake', cmake_args, [], installed=False, purpose=reason)
+	self.run_test('make', [], [], installed=False, purpose='Building smoke tests')
 
     def run_tests(self):
         """Run test."""
         reason = 'Checking ability to execute.'
-        bash = which("bash")
-        bash(self.install_test_root + "/" + self.test_script_relative_path + "/out" + "/run.sh")
+        run_path = join_path(self.install_test_root, self.test_script_relative_path, 'out', 'run.sh')
+        self.run_test('bash', [run_path], [], installed=False, purpose=reason)
     
     def test(self):
         self.build_tests()
