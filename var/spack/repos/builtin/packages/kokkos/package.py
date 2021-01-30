@@ -287,8 +287,8 @@ class Kokkos(CMakePackage, CudaPackage):
         cmake_path = join_path(self.install_test_root, self.test_script_relative_path, 'out')
         cmake_args = [cmake_path]
         reason = 'Checking ability to compile.'
-	self.run_test('cmake', cmake_args, [], installed=False, purpose=reason)
-	self.run_test('make', [], [], installed=False, purpose='Building smoke tests')
+        cmake(*cmake_args)
+        make()
 
     def run_tests(self):
         """Run test."""
