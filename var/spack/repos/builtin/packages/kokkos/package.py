@@ -285,7 +285,7 @@ class Kokkos(CMakePackage, CudaPackage):
     def build_tests(self):
         """Build test."""
         cmake_path = join_path(self.install_test_root, self.test_script_relative_path, 'out')
-        cmake_args = [cmake_path]
+        cmake_args = [cmake_path, '-DEXECUTABLE_OUTPUT_PATH='+cmake_path]
         reason = 'Checking ability to compile.'
         cmake(*cmake_args)
         make()
@@ -293,11 +293,9 @@ class Kokkos(CMakePackage, CudaPackage):
     def run_tests(self):
         """Run test."""
         reason = 'Checking ability to execute.'
-        run_path = join_path(self.install_test_root, self.test_script_relative_path, 'out', 'run.sh')
-        self.run_test('bash', [run_path], [], installed=False, purpose=reason)
+        run_path = join_path(self.install_test_root, self.test_script_relative_path, 'out')
+        self.run_test('make', [run_path, 'test'], [], installed=False, purpose=reason)
     
     def test(self):
         self.build_tests()
         self.run_tests()
-
-
