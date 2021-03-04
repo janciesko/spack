@@ -10,15 +10,15 @@ class Kokkos(CMakePackage, CudaPackage):
     portable applications targeting all major HPC platforms."""
    
     homepage = "https://github.com/kokkos/kokkos"
-    git = "https://github.com/janciesko/kokkos.git"
-    #url = "https://github.com/kokkos/kokkos/archive/3.1.01.tar.gz"
+    git = "https://github.com/kokkos/kokkos.git"
+    archive = "https://github.com/kokkos/kokkos/archive/3.3.01.tar.gz"
+    
     test_requires_compiler = True
 
-    maintainers = ['jjwilke']
+    maintainers = ['jciesko']
 
     version('develop', branch='develop')
     version('master',  branch='master')
-    version('spack_test_2', branch='spack_test_2')
     version('3.2.00', sha256='05e1b4dd1ef383ca56fe577913e1ff31614764e65de6d6f2a163b2bddb60b3e9')
     version('3.1.01', sha256='ff5024ebe8570887d00246e2793667e0d796b08c77a8227fe271127d36eec9dd')
     version('3.1.00', sha256="b935c9b780e7330bcb80809992caa2b66fd387e3a1c261c955d622dae857d878")
